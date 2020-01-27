@@ -12,9 +12,9 @@ const del    = require("del");
 const eslint = require("gulp-eslint");
 
 const newer    = require("gulp-newer");
-const imagemin = require("gulp-imagemin");
-const mozjpeg = require('imagemin-mozjpeg');
-const pngquant = require('imagemin-pngquant');
+// const imagemin = require("gulp-imagemin");
+// const mozjpeg = require('imagemin-mozjpeg');
+// const pngquant = require('imagemin-pngquant');
 
 const sass         = require("gulp-sass");
 const rename       = require("gulp-rename");
@@ -37,35 +37,35 @@ function browserSyncReload(done) {
 
 // Clean assets
 function clean() {
-  return del(["./_site/assets/css", "./_site/assets/fonts"]);
+  return del(["./_site/assets/css", "./_site/assets/fonts", "./_site/assets/js", "./_site/assets/images"]);
 }
 
-/*
-{quality: '70-90', speed: 1, floyd: 1}
-*/
+// /*
+// {quality: '70-90', speed: 1, floyd: 1}
+// */
 
-// Optimize Images
-function images() {
-  return gulp
-    .src("./assets/images/**/*")
-    .pipe(newer("./_site/assets/images"))
-    .pipe(
-      imagemin([
-        imagemin.gifsicle({ interlaced: true }),
-        mozjpeg({quality: 80}),
-        pngquant({quality: [0.7,0.90], speed: 1, floyd: 1}),
-        imagemin.svgo({
-          plugins: [
-            {
-              removeViewBox: false,
-              collapseGroups: true
-            }
-          ]
-        })
-      ])
-    )
-    .pipe(gulp.dest("./_site/assets/images"));
-}
+// // Optimize Images
+// function images() {
+//   return gulp
+//     .src("./assets/images/**/*")
+//     .pipe(newer("./_site/assets/images"))
+//     .pipe(
+//       imagemin([
+//         imagemin.gifsicle({ interlaced: true }),
+//         mozjpeg({quality: 80}),
+//         pngquant({quality: [0.7,0.90], speed: 1, floyd: 1}),
+//         imagemin.svgo({
+//           plugins: [
+//             {
+//               removeViewBox: false,
+//               collapseGroups: true
+//             }
+//           ]
+//         })
+//       ])
+//     )
+//     .pipe(gulp.dest("./_site/assets/images"));
+// }
 
 // CSS task
 function css() {
@@ -75,7 +75,7 @@ function css() {
     .pipe(sass({ outputStyle: "expanded" }))
     .pipe(rename({ suffix: ".min" }))
     .pipe(postcss([autoprefixer(), cssnano()]))
-    .pipe(gulp.dest("./_site/assets/css/"))
+    .pipe(gulp.dest("./assets/scss/"))
     .pipe(browsersync.stream());
 }
 
@@ -93,11 +93,11 @@ function scriptsLint() {
 function scripts() {
   return (
     gulp
-      .src(["./assets/js/**/*"])
-      .pipe(newer("./_site/assets/js"))
+      .src(["./assets/js/*.js"])
       .pipe(babel({presets: ['@babel/preset-env']}))
       .pipe(minify({noSource: true, ext: {min: '.min.js'}}))
-      .pipe(gulp.dest("./_site/assets/js/"))
+      .pipe(newer("./assets/js/"))
+      .pipe(gulp.dest("./assets/js/"))
   );
 }
 
